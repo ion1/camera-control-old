@@ -39,6 +39,11 @@ module CameraControl
 
       motion = Struct.new(:x, :y, :z).new 0, 0, 0
 
+      sdl_num_keys = [
+        SDL::Key::K1, SDL::Key::K2, SDL::Key::K3, SDL::Key::K4, SDL::Key::K5,
+        SDL::Key::K6, SDL::Key::K7, SDL::Key::K8, SDL::Key::K9, SDL::Key::K0,
+      ]
+
       while @running
         @board.scan_input
 
@@ -50,36 +55,8 @@ module CameraControl
             if ev.sym == SDL::Key::ESCAPE
               @running = false
 
-            # Eww...
-            elsif ev.sym == SDL::Key::K1
-              switch_camera 0
-              motion.x = motion.y = motion.z = 0
-            elsif ev.sym == SDL::Key::K2
-              switch_camera 1
-              motion.x = motion.y = motion.z = 0
-            elsif ev.sym == SDL::Key::K3
-              switch_camera 2
-              motion.x = motion.y = motion.z = 0
-            elsif ev.sym == SDL::Key::K4
-              switch_camera 3
-              motion.x = motion.y = motion.z = 0
-            elsif ev.sym == SDL::Key::K5
-              switch_camera 4
-              motion.x = motion.y = motion.z = 0
-            elsif ev.sym == SDL::Key::K6
-              switch_camera 5
-              motion.x = motion.y = motion.z = 0
-            elsif ev.sym == SDL::Key::K7
-              switch_camera 6
-              motion.x = motion.y = motion.z = 0
-            elsif ev.sym == SDL::Key::K8
-              switch_camera 7
-              motion.x = motion.y = motion.z = 0
-            elsif ev.sym == SDL::Key::K9
-              switch_camera 8
-              motion.x = motion.y = motion.z = 0
-            elsif ev.sym == SDL::Key::K0
-              switch_camera 9
+            elsif sdl_num_keys.include? ev.sym
+              switch_camera sdl_num_keys.index(ev.sym)
               motion.x = motion.y = motion.z = 0
 
             elsif ev.sym == SDL::Key::SPACE
