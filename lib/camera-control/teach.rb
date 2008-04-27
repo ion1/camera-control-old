@@ -21,7 +21,7 @@ module CameraControl
       init_sdl
 
       @current_camera = nil
-      switch_camera 1
+      switch_camera 0
 
       @num_cameras.times do |cam_id|
         @cam.preset_goto cam_id, :rest
@@ -52,35 +52,41 @@ module CameraControl
 
             # Eww...
             elsif ev.sym == SDL::Key::K1
-              switch_camera 1
+              switch_camera 0
               motion.x = motion.y = motion.z = 0
             elsif ev.sym == SDL::Key::K2
-              switch_camera 2
+              switch_camera 1
               motion.x = motion.y = motion.z = 0
             elsif ev.sym == SDL::Key::K3
-              switch_camera 3
+              switch_camera 2
               motion.x = motion.y = motion.z = 0
             elsif ev.sym == SDL::Key::K4
-              switch_camera 4
+              switch_camera 3
               motion.x = motion.y = motion.z = 0
             elsif ev.sym == SDL::Key::K5
-              switch_camera 5
+              switch_camera 4
               motion.x = motion.y = motion.z = 0
             elsif ev.sym == SDL::Key::K6
-              switch_camera 6
+              switch_camera 5
               motion.x = motion.y = motion.z = 0
             elsif ev.sym == SDL::Key::K7
-              switch_camera 7
+              switch_camera 6
               motion.x = motion.y = motion.z = 0
             elsif ev.sym == SDL::Key::K8
-              switch_camera 8
+              switch_camera 7
               motion.x = motion.y = motion.z = 0
             elsif ev.sym == SDL::Key::K9
-              switch_camera 9
+              switch_camera 8
               motion.x = motion.y = motion.z = 0
             elsif ev.sym == SDL::Key::K0
-              switch_camera 10
+              switch_camera 9
               motion.x = motion.y = motion.z = 0
+
+            elsif ev.sym == SDL::Key::SPACE
+              # Set the rest position.
+              cam_id = @current_camera
+              @cam.preset_set cam_id, :rest
+              @log.info "Saved the rest position: #{cam_id}/1"
 
             elsif ev.sym == SDL::Key::LEFT
               motion.x = -7
@@ -121,9 +127,9 @@ module CameraControl
     private
 
     def switch_camera num
-      if 0 < num and num <= @num_cameras
+      if 0 <= num and num < @num_cameras
         @current_camera = num
-        @board.switch_camera num-1
+        @board.switch_camera num
       end
     end
 

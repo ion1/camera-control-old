@@ -16,7 +16,7 @@ module CameraControl
       @log   = Logger.instance
 
       @current_camera = nil
-      switch_camera 1
+      switch_camera 0
 
       @num_cameras.times do |cam_id|
         @cam.preset_goto cam_id, :rest
@@ -39,6 +39,8 @@ module CameraControl
       end
 
       @board.add_delayed_callback :cancel do |keypress|
+        previous_camera = @current_camera
+
         if @num_cameras > 1
           # Pick another camera, which is already in rest position.
           cam_id = (@current_camera + 1) % @num_cameras
@@ -47,7 +49,7 @@ module CameraControl
         end
 
         switch_camera cam_id
-        @cam.preset_goto @current_camera, :rest
+        @cam.preset_goto previous_camera, :rest
       end
 
       while @running
@@ -65,9 +67,9 @@ module CameraControl
     private
 
     def switch_camera num
-      if 0 < num and num <= @num_cameras
+      if 0 <= num and num < @num_cameras
         @current_camera = num
-        @board.switch_camera num - 1
+        @board.switch_camera num
       end
     end
   end

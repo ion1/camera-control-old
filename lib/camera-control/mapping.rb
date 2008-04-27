@@ -62,9 +62,9 @@ module CameraControl
       end
     end
 
-    # Slot 0x00 is reserved for the ‘rest’ position.
+    # Slot 0x01 is reserved for the ‘rest’ position.
     def all_slots_available
-      (0x01 .. 0xff).to_a
+      (2 .. 127).to_a
     end
 
     def initialize_available_slots

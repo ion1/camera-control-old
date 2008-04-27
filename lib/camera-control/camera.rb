@@ -11,28 +11,38 @@ module CameraControl
     end
 
     def preset_goto cam_id, cam_slot
-      if cam_slot == :rest
-        cam_slot = 0
-      end
+      cam_slot = 1 if cam_slot == :rest
+      real_id = cam_id + 1
 
-      @ssp.send SSP::ADDR_CAT_CAMERA, cam_id,
-        [SSP::PRESET_MEMORY, cam_slot]
-    end
+      validate_cam_slot cam_slot
 
-    def preset_set cam_id, cam_slot
-      @ssp.send SSP::ADDR_CAT_CAMERA, cam_id,
+      @ssp.send SSP::ADDR_CAT_CAMERA, real_id,
         [SSP::PRESET_POSITION, cam_slot]
     end
 
+    def preset_set cam_id, cam_slot
+      cam_slot = 1 if cam_slot == :rest
+      real_id = cam_id + 1
+
+      validate_cam_slot cam_slot
+
+      @ssp.send SSP::ADDR_CAT_CAMERA, real_id,
+        [SSP::PRESET_MEMORY, cam_slot]
+    end
+
     def menu cam_id
-      @ssp.send SSP::ADDR_CAT_CAMERA, cam_id, [SSP::MENU]
+      real_id = cam_id + 1
+      @ssp.send SSP::ADDR_CAT_CAMERA, real_id, [SSP::MENU]
     end
 
     def enter cam_id
-      @ssp.send SSP::ADDR_CAT_CAMERA, cam_id, [SSP::ENTER]
+      real_id = cam_id + 1
+      @ssp.send SSP::ADDR_CAT_CAMERA, real_id, [SSP::ENTER]
     end
 
     def move cam_id, x, y, z
+      real_id = cam_id + 1
+
       x = [7, [-7, x].max].min
       y = [7, [-7, y].max].min
       z = [1, [-1, z].max].min
@@ -63,7 +73,17 @@ module CameraControl
         cmd[0] = SSP::CONCLUSION
       end
 
-      @ssp.send SSP::ADDR_CAT_CAMERA, cam_id, cmd
+      @ssp.send SSP::ADDR_CAT_CAMERA, real_id, cmd
+    end
+
+    private
+
+    def validate_cam_slot n, who=caller(2)
+      unless (1 .. 127).include? n
+        raise ArgumentError,
+          "cam_slot: expected 1..127, given #{n.inspect}",
+          who
+      end
     end
   end
 end
