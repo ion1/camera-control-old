@@ -43,9 +43,10 @@ module CameraControl
     ZOOM_DIRECT          = 0x44
 
     # Delays
-    DELAY_RELEASE_BUS = 0.140
-    DELAY_LONG        = 0.060
+    DELAY_BUS_FREE    = 0.100
+    DELAY_RELEASE_BUS = 0.200
     DELAY_SHORT       = 0.040
+    DELAY_HANDSHAKE   = 0.080
 
     def initialize device=0, my_addr=0
       @port = SerialPort.new device
@@ -66,28 +67,36 @@ module CameraControl
     end
 
     def send addr_cat, addr_dev, data
-      bus_free_at = @sleep_until + DELAY_RELEASE_BUS
+      # Commands are not sent without handshake if this delay has passed.
+      bus_free_at          = @sent_cmd.time + DELAY_BUS_FREE
+      # Delay a bit more before the handshake to make sure the bus is free.
+      bus_free_for_sure_at = @sent_cmd.time + DELAY_RELEASE_BUS
 
       first_cmd = @sent_cmd.time == 0.0
       bus_free  = bus_free_at <= Time.now.to_f
       same_addr = @sent_cmd.addr_cat == addr_cat &&
                   @sent_cmd.addr_dev == addr_dev
 
-      unless first_cmd or bus_free or same_addr
-        # The previous command was sent to another address. We need to sleep
-        # before sending commands to a new address.
-        @sleep_until = bus_free_at
-        bus_free = true
+      need_handshake = false
+
+      if first_cmd
+        need_handshake = true
+      else
+        if bus_free or not same_addr
+          # Sleep a bit extra to make sure the bus is free.
+          @sleep_until   = bus_free_for_sure_at
+          need_handshake = true
+        end
       end
 
-      if first_cmd or bus_free
+      if need_handshake
         # Do the handshaking.
         send_8 ADDR_CAT_CONTROLLER
         send_8 @my_addr
         send_8 addr_cat
-        send_8 addr_dev,           DELAY_LONG
+        send_8 addr_dev
         # receive RECEIVE_CONFIRMATION
-        send_8 TRANSMISSION_START, DELAY_LONG*2
+        send_8 TRANSMISSION_START, DELAY_HANDSHAKE
         # receive ACK
       end
 
@@ -114,11 +123,11 @@ module CameraControl
         end
       end
 
-      @sleep_until += DELAY_LONG
-
       @sent_cmd.addr_cat = addr_cat
       @sent_cmd.addr_dev = addr_dev
       @sent_cmd.time     = Time.now.to_f
+
+      @sleep_until += DELAY_SHORT
 
       @log.debug "SSP: sent %s" % @log_bytes.map {|b| "%02x" % b }.join(' ')
       @log_bytes.clear
