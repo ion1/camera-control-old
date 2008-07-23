@@ -21,6 +21,7 @@ class Main
     @mode = :normal
 
     @log = CC::Logger.singleton
+    @log.level = Logger::DEBUG
 
     @input = ControlBoard::Input.singleton
     @input_delayed = ControlBoard::InputDelayed.singleton
