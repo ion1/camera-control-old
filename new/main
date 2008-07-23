@@ -1,0 +1,102 @@
+#!/usr/bin/env ruby
+
+Dir.chdir File.dirname(__FILE__)
+
+begin
+  require 'rubygems'
+rescue LoadError
+  # Ignore
+end
+
+require 'cc/logger'
+require 'cc/singleton'
+require 'control-board/input'
+require 'control-board/input-delayed'
+require 'control-board/video-selector'
+require 'db/models'
+require 'ssp/camera'
+
+class Main
+  def initialize
+    @mode = :normal
+
+    @log = CC::Logger.singleton
+
+    @input = ControlBoard::Input.singleton
+    @input_delayed = ControlBoard::InputDelayed.singleton
+
+    @video_selector = ControlBoard::VideoSelector.singleton
+
+    @active_camera = nil  # Will be filled in by goto.
+
+    setup_normal_callbacks
+    setup_teach_callbacks
+
+    goto "rest"
+
+    main_loop
+  end
+
+  private
+
+  def main_loop
+    while [:normal, :teach].include? @mode
+      @input.scan
+    end
+  end
+
+  def setup_normal_callbacks
+    @input_delayed.add_callback :press do |keypress|
+      break if @mode != :normal
+      goto "seat-#{keypress.y},#{keypress.x}"
+    end
+
+    @input_delayed.add_callback :cancel do |keypress|
+      break if @mode != :normal
+      goto "rest"
+    end
+  end
+
+  def setup_teach_callbacks
+    @input.add_callback do |keypress|
+      break if @mode != :teach
+
+      # Ignore if button is released.
+      break unless keypress.state
+
+      save "seat-#{keypress.y},#{keypress.x}"
+    end
+  end
+
+  def goto target_name
+    target = Target.find_by_name target_name
+    if target.nil?
+      @log.warn "Target #{target_name.inspect} not found"
+      return
+    end
+
+    slot = target.ssp_camera_slot
+    if slot.nil?
+      @log.warn "Target #{target_name.inspect} has no SSP camera slot"
+      return
+    end
+
+    dev_id  = slot.ssp_camera.dev
+    slot_id = slot.slot
+
+    video_id = dev_id-1
+    @video_selector.select video_id
+
+    @active_camera = slot.ssp_camera
+
+    SSP::Camera.singleton(dev_id).preset_goto slot_id
+  end
+
+  def save target_name
+    target = Target.find_or_create_by_name target_name
+    target.allocate_slot @active_camera
+  end
+end
+
+Main.new if $0 == __FILE__
+
