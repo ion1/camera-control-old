@@ -1,8 +1,0 @@
-#!/usr/bin/env ruby
-$LOAD_PATH << File.dirname($0) + '/lib'
-
-require 'camera-control/main'
-
-CameraControl::Logger.instance.level = Logger::DEBUG
-
-CameraControl::Main.new
