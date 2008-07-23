@@ -1,4 +1,5 @@
-require 'serialport'
+# serialport breaks with rubygems require.
+Kernel.require 'serialport'
 
 require 'cc/logger'
 
