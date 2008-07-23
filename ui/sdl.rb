@@ -33,6 +33,12 @@ module UI
           elsif NUM_KEYS.include? ev.sym
             queue :switch_camera, NUM_KEYS.index(ev.sym)
 
+          elsif ev.sym == ::SDL::Key::F1
+            queue :mode, :normal
+
+          elsif ev.sym == ::SDL::Key::F2
+            queue :mode, :teach
+
           elsif ev.sym == ::SDL::Key::SPACE
             # Set the rest position
             queue :save, 'rest'

@@ -59,6 +59,10 @@ class Main
         when :quit
           @mode = :quit
 
+        when :mode
+          @mode = args.first
+          @log.info "Switching to mode #{@mode}"
+
         when :switch_camera
           num = args.first
           cam = SspCamera.find_by_dev num+1
