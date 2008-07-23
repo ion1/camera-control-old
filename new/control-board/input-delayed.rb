@@ -3,7 +3,7 @@ require 'cc/logger'
 require 'control-board/input'
 
 module ControlBoard
-  class DelayedInput
+  class InputDelayed
     def initialize grace_time=5.0
       super()
 
