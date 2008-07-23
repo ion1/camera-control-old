@@ -4,14 +4,15 @@ require 'fileutils'
 require 'cc/logger'
 require 'cc/singleton'
 
-config_root     = File.expand_path '~/.config/camera-control'
-database_path   = config_root+'/db.sqlite3'
-schema_path     = config_root+'/db.schema.rb'
+data_root       = File.expand_path '~/.local/share/camera-control'
+database_path   = data_root+'/db.sqlite3'
+schema_path     = data_root+'/db.schema.rb'
 migrations_path = File.dirname(__FILE__) + '/migrations'
 
-FileUtils.mkdir_p config_root
+FileUtils.mkdir_p data_root
 
-ActiveRecord::Base.logger = CC::Logger.singleton
+ActiveRecord::Base.logger = CC::Logger.singleton CC::Logger::LOG_ROOT+'/db.log'
+ActiveRecord::Base.logger.level = Logger::DEBUG
 
 ActiveRecord::Base.establish_connection :adapter  => 'sqlite3',
                                         :database => database_path
