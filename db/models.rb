@@ -2,6 +2,7 @@ require 'active_record'
 require 'fileutils'
 
 require 'cc/logger'
+require 'cc/singleton'
 
 config_root     = File.expand_path '~/.config/camera-control'
 database_path   = config_root+'/db.sqlite3'
