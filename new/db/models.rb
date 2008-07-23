@@ -1,6 +1,7 @@
 require 'active_record'
 require 'fileutils'
-require 'logger'
+
+require 'cc/logger'
 
 config_root     = File.expand_path '~/.config/camera-control'
 database_path   = config_root+'/db.sqlite3'
@@ -9,7 +10,7 @@ migrations_path = File.dirname(__FILE__) + '/migrations'
 
 FileUtils.mkdir_p config_root
 
-ActiveRecord::Base.logger = Logger.new $stderr
+ActiveRecord::Base.logger = CC::Logger.singleton
 
 ActiveRecord::Base.establish_connection :adapter  => 'sqlite3',
                                         :database => database_path

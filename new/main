@@ -70,6 +70,8 @@ class Main
   end
 
   def goto target_name
+    @log.info "Going to target #{target_name.inspect}"
+
     target = Target.find_by_name target_name
     if target.nil?
       @log.warn "Target #{target_name.inspect} not found"
@@ -94,6 +96,8 @@ class Main
   end
 
   def save target_name
+    @log.info "Saving target #{target_name.inspect}"
+
     target = Target.find_or_create_by_name target_name
     target.allocate_slot @active_camera
   end
