@@ -22,7 +22,7 @@ module ControlBoard
       @callbacks.add &block
     end
 
-    def scan_input
+    def scan
       recv = [0] * 8
 
       8.times do |i|
