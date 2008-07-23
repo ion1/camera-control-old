@@ -28,7 +28,7 @@ class Main
 
     @video_selector = ControlBoard::VideoSelector.singleton
 
-    @active_camera = nil  # Will be filled in by goto.
+    @active_camera = SspCamera.find_or_create_by_dev 1
 
     setup_normal_callbacks
     setup_teach_callbacks
