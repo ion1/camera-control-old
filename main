@@ -2,6 +2,8 @@
 
 Dir.chdir File.dirname(__FILE__)
 
+require 'ui/sdl'
+
 begin
   require 'rubygems'
 rescue LoadError
@@ -33,6 +35,8 @@ class Main
     setup_normal_callbacks
     setup_teach_callbacks
 
+    @ui = UI::SDL.new
+
     goto "rest"
 
     main_loop
@@ -41,8 +45,57 @@ class Main
   private
 
   def main_loop
+    motion = [0, 0, 0]
+    motion_stopped = true
+
     while [:normal, :teach].include? @mode
       @input.scan
+
+      @ui.iterate
+      @ui.flush_queue.each do |args|
+        cmd = args.shift
+
+        case cmd
+        when :quit
+          @mode = :quit
+
+        when :switch_camera
+          num = args.first
+          cam = SspCamera.find_by_dev num+1
+          if cam
+            @video_selector.select num
+            @active_camera = cam
+          end
+
+        when :save
+          target = args.first
+          save target
+
+        when :motion
+          type, speed = args
+
+          case type
+          when :pan
+            motion[0] = 4*speed
+          when :tilt
+            motion[1] = 3*speed
+          when :zoom
+            motion[2] = speed
+          end
+        end
+      end
+
+      if motion_stopped and motion != [0, 0, 0]
+        motion_stopped = false
+      end
+
+      unless motion_stopped
+        SSP::Camera.singleton(@active_camera.dev).move *motion
+      end
+
+      if not motion_stopped and motion == [0, 0, 0]
+        motion_stopped = true
+      end
     end
   end
 
@@ -100,6 +153,9 @@ class Main
 
     target = Target.find_or_create_by_name target_name
     target.allocate_slot @active_camera
+
+    SSP::Camera.singleton(@active_camera.dev).preset_set \
+      target.ssp_camera_slot.slot
   end
 end
 
