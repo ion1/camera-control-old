@@ -1,29 +1,30 @@
 require 'cc/singleton'
+require 'ssp/constants'
 require 'ssp/protocol'
 
 module SSP
   class Camera
     def initialize dev
       @dev = dev
-      @ssp = SSP::Protocol.singleton
+      @ssp = Protocol.singleton
     end
 
     def preset_goto slot
       validate_slot slot
-      @ssp.send SSP::ADDR_CAT_CAMERA, @dev, [SSP::PRESET_POSITION, slot]
+      @ssp.send ADDR_CAT_CAMERA, @dev, [PRESET_POSITION, slot]
     end
 
     def preset_set slot
       validate_slot slot
-      @ssp.send SSP::ADDR_CAT_CAMERA, @dev, [SSP::PRESET_MEMORY, slot]
+      @ssp.send ADDR_CAT_CAMERA, @dev, [PRESET_MEMORY, slot]
     end
 
     def menu
-      @ssp.send SSP::ADDR_CAT_CAMERA, @dev, [SSP::MENU]
+      @ssp.send ADDR_CAT_CAMERA, @dev, [MENU]
     end
 
     def enter
-      @ssp.send SSP::ADDR_CAT_CAMERA, @dev, [SSP::MENU]
+      @ssp.send ADDR_CAT_CAMERA, @dev, [MENU]
     end
 
     def move pan, tilt, zoom
@@ -31,7 +32,7 @@ module SSP
       tilt = [7, [-7, tilt].max].min
       zoom = [1, [-1, zoom].max].min
 
-      cmd = [SSP::PTZ_CONTROL, 0x00, 0x00]
+      cmd = [PTZ_CONTROL, 0x00, 0x00]
 
       if pan > 0
         cmd[1] |= 0x01  # right
@@ -55,10 +56,10 @@ module SSP
       cmd[2] |= tilt.abs << 3
 
       if cmd[1] == 0 and cmd[2] == 0
-        cmd[0] = SSP::CONCLUSION
+        cmd[0] = CONCLUSION
       end
 
-      @ssp.send SSP::ADDR_CAT_CAMERA, @dev, cmd
+      @ssp.send ADDR_CAT_CAMERA, @dev, cmd
     end
 
     private
