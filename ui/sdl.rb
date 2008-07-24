@@ -39,6 +39,12 @@ module UI
           elsif ev.sym == ::SDL::Key::F2
             queue :mode, :teach
 
+          elsif ev.sym == ::SDL::Key::M
+            queue :menu
+
+          elsif ev.sym == ::SDL::Key::RETURN
+            queue :enter
+
           elsif ev.sym == ::SDL::Key::SPACE
             # Set the rest position
             queue :save, 'rest'

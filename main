@@ -71,6 +71,12 @@ class Main
             @active_camera = cam
           end
 
+        when :menu
+          SSP::Camera.singleton(@active_camera.dev).menu
+
+        when :enter
+          SSP::Camera.singleton(@active_camera.dev).enter
+
         when :save
           target = args.first
           save target
