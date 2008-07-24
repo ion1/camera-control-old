@@ -24,7 +24,7 @@ module SSP
     end
 
     def enter
-      @ssp.send ADDR_CAT_CAMERA, @dev, [MENU]
+      @ssp.send ADDR_CAT_CAMERA, @dev, [ENTER]
     end
 
     def move pan, tilt, zoom
