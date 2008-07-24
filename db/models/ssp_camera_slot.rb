@@ -1,3 +1,5 @@
+require 'ssp/constants'
+
 class SspCameraSlot < ActiveRecord::Base
   belongs_to :ssp_camera
   belongs_to :target
@@ -6,6 +8,6 @@ class SspCameraSlot < ActiveRecord::Base
   named_scope :allocated, :conditions => ['target_id IS NOT NULL']
 
   validates_presence_of  :slot
-  validates_inclusion_of :slot, :in => (1..127)
+  validates_inclusion_of :slot, :in => SSP::PRESET_RANGE
 end
 

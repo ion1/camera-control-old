@@ -65,9 +65,9 @@ module SSP
     private
 
     def validate_slot slot, who=caller(2)
-      unless (1..127).include? slot
+      unless PRESET_RANGE.include? slot
         raise ArgumentError,
-          "slot: expected 1..127, got #{slot.inspect}",
+          "slot: expected #{PRESET_RANGE}, got #{slot.inspect}",
           who
       end
     end

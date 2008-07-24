@@ -9,10 +9,25 @@ module SSP
   ADDR_CAT_OTHER       = 0xf7
 
   # Second address byte: devices
-  ADDR_DEV_MAX            = 0x7f
-  ADDR_DEV_CONTROLLER_MAX = 0x04
-  ADDR_DEV_BROADCAST      = 0xe0
-  ADDR_DEV_BROADCAST_MAX  = 0xef
+  ADDR_DEV_MIN   = 0x00
+  ADDR_DEV_MAX   = 0x7f
+  ADDR_DEV_RANGE = (ADDR_DEV_MIN .. ADDR_DEV_MAX)
+
+  ADDR_DEV_CONTROLLER_MIN   = 0x00
+  ADDR_DEV_CONTROLLER_MAX   = 0x04
+  ADDR_DEV_CONTROLLER_RANGE = (ADDR_DEV_CONTROLLER_MIN ..
+                               ADDR_DEV_CONTROLLER_MAX)
+
+  ADDR_DEV_BROADCAST             = 0xe0
+  ADDR_DEV_BROADCAST_GROUP_MIN   = 0xe1
+  ADDR_DEV_BROADCAST_GROUP_MAX   = 0xef
+  ADDR_DEV_BROADCAST_GROUP_RANGE = (ADDR_DEV_BROADCAST_GROUP_MIN ..
+                                    ADDR_DEV_BROADCAST_GROUP_MAX)
+
+  # Memory slots
+  PRESET_MIN   = 0x01
+  PRESET_MAX   = 0x7f
+  PRESET_RANGE = (PRESET_MIN .. PRESET_MAX)
 
   # Commands
   ACK                  = 0x0a
