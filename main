@@ -35,6 +35,7 @@ class Main
 
     setup_normal_callbacks
     setup_teach_callbacks
+    setup_signal_traps
 
     @ui = UI::SDL.new
 
@@ -128,6 +129,15 @@ class Main
     @input.add_callback do |keypress|
       if @mode == :teach and keypress.state
         save "seat-#{keypress.y},#{keypress.x}"
+      end
+    end
+  end
+
+  def setup_signal_traps
+    [:INT, :TERM].each do |sig|
+      trap sig do
+        @log.error "Received #{sig}, quitting"
+        @mode = :quit
       end
     end
   end
