@@ -164,10 +164,19 @@ class Main
     target = Target.find_or_create_by_name target_name
     target.allocate_slot @active_camera
 
-    SSP::Camera.singleton(@active_camera.dev).preset_set \
-      target.ssp_camera_slot.slot
+    cam  = SSP::Camera.singleton @active_camera.dev
+    slot = target.ssp_camera_slot.slot
+
+    cam.preset_set slot
 
     CC::Sound.info
+
+    @log.debug "Moving to the left"
+    cam.move -7, 0, 0
+    sleep 0.1
+
+    @log.debug "Moving back to target #{target_name.inspect}"
+    cam.preset_goto slot
   end
 end
 
