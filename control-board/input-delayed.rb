@@ -4,7 +4,7 @@ require 'control-board/input'
 
 module ControlBoard
   class InputDelayed
-    def initialize grace_time=5.0
+    def initialize grace_time=1.0
       super()
 
       input = Input.singleton
