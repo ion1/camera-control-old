@@ -111,24 +111,19 @@ class Main
 
   def setup_normal_callbacks
     @input_delayed.add_callback :press do |keypress|
-      break if @mode != :normal
-      goto "seat-#{keypress.y},#{keypress.x}"
+      goto "seat-#{keypress.y},#{keypress.x}" if @mode == :normal
     end
 
     @input_delayed.add_callback :cancel do |keypress|
-      break if @mode != :normal
-      goto "rest"
+      goto "rest" if @mode == :normal
     end
   end
 
   def setup_teach_callbacks
     @input.add_callback do |keypress|
-      break if @mode != :teach
-
-      # Ignore if button is released.
-      break unless keypress.state
-
-      save "seat-#{keypress.y},#{keypress.x}"
+      if @mode == :teach and keypress.state
+        save "seat-#{keypress.y},#{keypress.x}"
+      end
     end
   end
 
