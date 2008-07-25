@@ -12,6 +12,7 @@ end
 
 require 'cc/logger'
 require 'cc/singleton'
+require 'cc/sound'
 require 'control-board/input'
 require 'control-board/input-delayed'
 require 'control-board/video-selector'
@@ -39,6 +40,8 @@ class Main
 
     goto "rest"
 
+    CC::Sound.info
+
     main_loop
   end
 
@@ -62,6 +65,8 @@ class Main
         when :mode
           @mode = args.first
           @log.info "Switching to mode #{@mode}"
+
+          CC::Sound.info
 
         when :switch_camera
           num = args.first
@@ -161,6 +166,8 @@ class Main
 
     SSP::Camera.singleton(@active_camera.dev).preset_set \
       target.ssp_camera_slot.slot
+
+    CC::Sound.info
   end
 end
 
